@@ -219,17 +219,30 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("What is up?"):
+if prompt := st.chat_input("Ask about the codebase:"):
+    # Display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
     
+    # Perform RAG and get AI response
     with st.chat_message("assistant"):
+        # First use RAG to get relevant context
+        rag_response = perform_rag(prompt)
+        
+        # Then create the stream response using the RAG response
         stream = client.chat.completions.create(
             model=st.session_state["groq_model"],
             messages=[
-                {"role": m["role"], "content": m["content"]} 
-                for m in st.session_state.messages
+                {
+                    "role": "system", 
+                    "content": "You are a helpful coding assistant. Use the provided context to answer questions about the codebase."
+                },
+                {"role": "assistant", "content": rag_response},
+                *[
+                    {"role": m["role"], "content": m["content"]} 
+                    for m in st.session_state.messages
+                ],
             ],
             stream=True,
         )
