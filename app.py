@@ -218,6 +218,9 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+        
+with st.chat_message("assistant"):
+        st.write("Hello! I can answer any questions you have about the Secure Agent Codebase! What can I help you with.")
 
 if prompt := st.chat_input("Ask about the codebase:"):
     # Display user message
@@ -228,6 +231,7 @@ if prompt := st.chat_input("Ask about the codebase:"):
     # Perform RAG and get AI response
     with st.chat_message("assistant"):
         # First use RAG to get relevant context
+        st.write("Hello! I can answer any questions you have about the Secure Agent Codebase! What can I help you with.")
         rag_response = perform_rag(prompt)
         
         # Then create the stream response using the RAG response
